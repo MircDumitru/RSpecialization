@@ -104,5 +104,5 @@ The tidy data set is obtained via the following procedure:
     the average of each variable for each activity in `df` is created.
     (`dim(df_means) = (6, 80)`)
 
--   The independent tidy data frame `df_means` is saved as a *.csv* file
-    dataset: *tidydata.csv*.
+-   The independent tidy data frame `df_means` is saved as a *.txt* file
+    dataset: *tidydata.txt*.
