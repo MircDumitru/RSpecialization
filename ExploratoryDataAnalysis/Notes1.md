@@ -508,6 +508,8 @@ The regions of the plot: \* The regions : - side 1 (bottom) - side 2
 (left) - side 3 (up) - side 4 (right)  
 \* Can be adjusested via `plot(mar = c(m1, m2, m3, m4))`
 
+### The point shapes - pch
+
     par(mfrow = c(1, 3))
     plot(x, y, pch = 2)
     plot(x, y, pch = 3)
@@ -515,4 +517,186 @@ The regions of the plot: \* The regions : - side 1 (bottom) - side 2
 
 ![](Notes1_files/figure-markdown_strict/unnamed-chunk-34-1.png)
 
+### Title, text, legend
+
+    plot(x, y, pch = 20)
+    title("Scatterplot")
+    text(-2.5, 2, "Added text")
+    legend("topright", legend = 'Data', pch = 20)
+
+    fit <- lm(x~y)
+    abline(fit, lwd = 2, col = 'blue')
+
+![](Notes1_files/figure-markdown_strict/unnamed-chunk-35-1.png)
+
+    plot(x, y, xlab = "weight", ylab = "height", pch = 20)
+    title("Scatterplot")
+    text(-2.5, 2, "Added text")
+    legend("topright", legend = 'Data', pch = 20)
+
+    fit <- lm(x~y)
+    abline(fit, lwd = 2, col = 'blue')
+
+![](Notes1_files/figure-markdown_strict/unnamed-chunk-36-1.png)
+
+### Multiple plots
+
+    x <- rnorm(100)
+    y <- rnorm(100)
+    z <- rpois(100, 2)
+    par(mfrow = c(2,1), mar = c(2,2,1,1))
+    plot(x, y, pch = 20)
+    plot(x, z, pch = 20)
+
+![](Notes1_files/figure-markdown_strict/unnamed-chunk-37-1.png)
+
+    x <- rnorm(100)
+    y <- rnorm(100)
+    z <- rpois(100, 2)
+    par(mfrow = c(2,2), mar = c(2,2,1,1))
+    plot(x, y, pch = 20)
+    plot(z, x, pch = 20)
+    plot(x, z, pch = 20)
+    plot(y, z, pch = 20)
+
+![](Notes1_files/figure-markdown_strict/unnamed-chunk-38-1.png)
+
+    x <- rnorm(100,5,2)
+    noise <- rnorm(100)
+    y <- x + noise
+    ## Generate factor levels 
+    g <- gl(2,50, labels = c("Male", "Female"))
+    plot(x, y, type = 'n')
+    points(x[g == 'Male'], y[g == 'Male'], 
+           pch = 19, col = 'darkmagenta')
+    points(x[g == 'Female'], y[g == 'Female'], 
+           pch = 19, col = 'darkorange')
+    legend("topright", pch = 19, 
+           legend = c("Male", 'Female'), 
+           col = c('darkmagenta', 'darkorange'))
+
+![](Notes1_files/figure-markdown_strict/unnamed-chunk-39-1.png)
+
 ## 3. Graphics Devices
+
+-   A graphic device is something where you can make a plot appear:
+    -   A window on the computer (screen device).
+    -   A *pdf* file (file device).
+    -   A *png* or *jpeg* file (file device).
+    -   A scalable vector graphics (*svg*) file (file device)
+-   When you make a plot in R, it has to be sent to a specific graphics
+    device.
+-   The most common place for a plot to be sent is the *screen device*:
+    -   On a Mac, the screen device is launched with `quartz()`.
+    -   On a Windows, the screen device is launched with `windows()`.
+    -   On a Unix/Linux, the screen device is launched with `x11()`.
+-   When you make a plot you need to consider how the plot will be used
+    to determine what device the plot should be sent to:
+    -   The list of devices is found in `?Devices`.
+-   For quick visualizations and exploratory analysis, usually you want
+    to use the screen device:
+    -   Functions like `plot` in base, `xyplot` in latice or `qplot` in
+        ggplot2 will default to sending a plot to the screen device.
+    -   On a given platform, there is only one screen device.
+-   Fol plots that may be printed out or be incorporated into a document
+    (papers, presentations) a *file* device is more appropriate:
+    -   There are many different file devices to choose from.
+
+### How does a plot get created?
+
+There are two basic approaches to plotting.
+
+-   The first one is the most common:
+    -   Call a plotting function (like `plot` or `qplot` ).
+    -   The plot appears on the screen device.
+    -   Annotate if necessary.
+
+<!-- -->
+
+    library(datasets)
+    with(faithful, plot(eruptions, waiting, 
+                        col = 'darkorange')) ## Make plot appear on the screen device
+    title(main = 'Old Faithful Geyser data')
+
+![](Notes1_files/figure-markdown_strict/unnamed-chunk-40-1.png)
+
+-   The second one is the mostly used for file devices:
+    -   *Explicitly* laungh a graphics device.
+    -   Call a plotting function to make a plot.
+    -   Annotate if necessary.
+    -   *Explicitly* close graphics device with `dev.off()` ( *this is
+        very important* ).
+
+<!-- -->
+
+    pdf(file = 'myplot.pdf') ## Open PDF device, create "myplot.pdf" in my working directory 
+    with(faithful, plot(eruptions, waiting, 
+                        col = 'darkorange')) # Create plot and send to a file (no plot appears on screen)
+    title(main = 'Old Faithful Geyser data') # Annotate
+    dev.off() #Close the PDF file device
+
+    ## quartz_off_screen 
+    ##                 2
+
+    ## Now you can view the file 'myplot.pdf' on your computer
+
+### Graphics file devices
+
+Two basic types of file devices: *vector* and *bitmap* devices
+
+-   Vector formats:
+    -   **pdf** - useful for line-type graphics, resizes well, portable,
+        not efficient if the plot has many points/objects  
+    -   **svg** - XML-based scalable vector graphics; supports animation
+        and interactivity, potentually useful for web-based plots
+    -   **win.metafile** - available only on Windows  
+    -   **postscript** - older format
+-   Bitmap formats - represent images as series of pixels
+    -   **png** - bitmapped format, good for line drawings or images
+        with solid colors, uses lossless compression, most web browswers
+        can read this format nativaley, good for plotting many many
+        points, does not resize well
+    -   **jpeg** - good for photgraphs or natural scenes, uses lossy
+        compression, good for plotting many many points, does not resize
+        well, can be read by almost any computer & any web browswer, not
+        great for line drawings
+    -   **tiff** - create bitmap files in the TIFF formatl supports
+        lossless compression
+    -   **bmp** - native Windows bitmapped format
+
+### Multiple open graphics devices
+
+-   Possible to open multipe graphics devices (screen, file or both) for
+    example when viewing multiple plots at once.
+-   Plotting can only occur on one graphics device at a time.
+-   The **curently active** graphics device can be found by calling
+    `dev.cur()`.
+-   Every open graphics devices is assigned an integer  ≥ 2.
+-   You can change the active graphics device with `dev.set(<integer>)`
+    where `<integer>` is the number associated with the grpahics device
+    you want to switch to.
+
+### Copying Plots
+
+-   Copying a plot to another device is possible
+    -   `dev.copy` - copy a plot from one device to another
+    -   `dev.copy2pdf` - specifcially copy a plot to a PDF file
+
+Copying a plot is not an exact opeation, the result may not be
+identical.
+
+    library(dataset)
+    with(faithful, plot(eruptions, waiting, col = 'brown4')) ## Creating the plot
+    title(main = 'Old Faithful Geyser data') ## Annotating the plot
+
+![](Notes1_files/figure-markdown_strict/unnamed-chunk-42-1.png)
+
+    dev.copy(png, file = "geyser.png") ## Copying the plot to a PNG file
+
+    ## quartz_off_screen 
+    ##                 3
+
+    dev.off() ## Clossing the PNG device
+
+    ## quartz_off_screen 
+    ##                 2
