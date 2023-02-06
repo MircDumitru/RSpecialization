@@ -1,0 +1,297 @@
+---
+title: "Basic ideas of reproducible research - Week 1"
+subtitle: "Course Notes from Coursera Reproducible Research"
+author: "Mircea Dumitru"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE)
+```
+
+
+# Concepts and Ideas
+
+## Replication
+
+The ultimate standard for strengthening scientific evidence is replicaiton of findings and conducting studies with independsnt 
+
+* investigators
+* data
+* analytical methids
+* laboratories
+* instruments
+
+Replication is particularly important in studies that can impact broad policy or regulatory decisions.
+
+Some studies cannot be replicated
+* no time, oportunistic
+* no money
+* unique
+
+Reproducible research: make analytic data nad code available so that others may reproduce findings.
+
+Bridging the gap between the golden standard (replication) and the worst standard (nothing)
+
+```{r, echo=FALSE}
+DiagrammeR::grViz("digraph {
+  graph [layout = dot, rankdir = TB]
+  
+  node [shape = rectangle]        
+  rec1 [label = 'Replication']
+  rec2 [label = 'Reproducibility']
+  rec3 [label = 'Nothing']
+
+  # edge definitions with the node IDs
+  rec1 -> rec2 -> rec3
+  rec3 -> rec2 -> rec1
+  }",
+  height = 300)
+```
+
+The middle ground between _replication_ and _nothing_ is _reproducibility_, which implies making available the data for the study & the computational methods (the mathematical model and the corresponding source codes) available. This allows for _data analysis validation_.
+
+## Why do we need reproducible research?
+
+* New technologies increasing data collection throughput.
+
+* Data are more complex and extremly high dimensional.
+
+* Existing databases can be mergend into _megadatabases_.
+
+* Computing power is greatly increased allowing more sophisticated analyses.
+
+* For every filed "X" there is a field "Computational X".
+
+## Example: Reproducible Air Pollution and Health Research.
+
+* Estimating small (but important) health effects in the presence of much stronger signals.
+
+* Results inform substantial policy decisions, affect many stakeholders.
+    * EPA regulations can cost billion of dollars.
+
+* Comples statistical methods are needed and subjected to intense scrutiny.
+
+
+## Research pipeline
+
+```{r, echo=FALSE}
+DiagrammeR::grViz("digraph {
+  graph [layout = dot, rankdir = TB]
+  
+  node [shape = rectangle]        
+  rec1 [label = 'Measured Data']
+  rec2 [label = 'Analytic Data']
+  rec3 [label = 'Computational results']
+  rec4 [label = 'Figures']
+  rec5 [label = 'Tables']
+  rec6 [label = 'Numerical Summaries']
+  rec7 [label = 'Article']
+  rec8 [label = 'Text']
+
+  # edge definitions with the node IDs
+  rec1 -> rec2 [label='Processing Code']
+  rec2 -> rec3 [label='Analytic Code']
+  rec3 -> rec4 [label='Presentation Code'] 
+  rec3 -> rec5 [label='Presentation Code']
+  rec3 -> rec6 [label='Presentation Code']
+  rec4 -> rec7
+  rec5 -> rec7
+  rec6 -> rec7
+  rec8 -> rec7
+  }", 
+  height = 300)
+```
+
+## The Institute of Medicine Report 
+
+In the Discovery/Test Validation stage of omics-based tests:
+
+* **Data/metadata** used to develop test should be made publicly available.
+
+* The **computer code** and fully specified computation procedures used for development of the candidate omics-based test should be made sustainably available.
+
+* "Ideally, the computer code that is relleased will **encompass all of the steps of computationl analysis**, including all data preprocesing steps that have been described in this chapter. All aspects of the analysis need to be transparently reported."
+
+## What do we need for reproducible research?
+
+* Analytic data are available (this is differently from raw data).
+
+* Analytic code are available. 
+
+* Documentation of code and data.
+
+* Standard means of distribution.
+
+
+## Who are the players?
+
+* Authors
+    * Want to make their research reproducible.
+    * Want tools for RR to make their lives easier (or at least not much harder).
+    
+* Readers
+    * Want to reproduce (and perhaps expand upon) intersting findings.
+    * Want tools for RR to makr lives easier.
+    
+    
+## Challenges
+
+* Authors must undertake considerable effort to put data/results on the web (may not have resources like a web server).
+
+* Readers must download data/results individually and piece together which data go with which code sections, etc
+
+* Readers may not have the same resources as authors
+
+* Few tools to help authors/readers (although toolbox is growing )
+
+## In reality 
+
+* Authors 
+    * Just put stuff on the web.
+    * Journal supplementary materials.
+    * There are some central databases vor various fields (e.g. biology, ICPSR).
+    
+* Readers
+    * Just download the data and (try to) figure it out.
+    * Piece together the sofware and run it.
+    
+    
+## Literate (Statistical Programming)
+
+* An article is a stram of **text** and **code**.
+
+* Analysis code is divided into text and code "chunks".
+
+* Each code chunk loads data and computes results.
+
+* Presentation code formats results (tables, figures, etc.).
+
+* Article text explains what is going on.
+
+* Literate programs can be **weaved** to produce human-readable documents and **tangled** to produce machine-readable documents.
+
+* Literat programming is a general concept that requires
+    * A documentation language (human readable)
+    * A programming language (machine readable)
+
+* **Sweave** uses 
+    * $\LaTeX$ as the documentation language.
+    *`R` as the programming language.  
+
+* **Sweave**  
+    * Was developed by Friedrich Leisch (member of `R` Core).
+    * Maintained by `R` core.
+    * Has many limitations.
+    * Focused primarily on $\LaTeX$.
+    * Lacks featurs like caching, multiple. plots per chunk, mixing programming languages and many other technical items.
+    * Not frequently updated or very actively developed.
+    
+    
+* **Knitr**    
+    * Is an alternative package to literate statistical programming
+    * Brings together many features added on to Sweave to address limitations
+    * Usses `R` as the programming language (although others are allowed) and variety of documentation languages
+        * $\LaTeX$, Mardown, HTML
+    * was developed by Yihui Xie
+    
+    
+# Structure of a Data Analysis
+
+## Steps in a data analysis
+
+* Define the question.
+* Define the dieal data set.
+* Determine what data you can access.
+* Obtain the data.
+* Cleand the data.
+* Exploratory data analysis.
+* Statistical prediction/modeling.
+* Interpret results.
+* Challenge results.
+* Synthesize/write up results.
+* Create reproducible code.
+
+### Defining a question
+
+Defining a question is the most powerful dimension reduction tool you can employ, i.e. a well defined question narrows the data needed for the answer.
+
+### Defining the ideal data set
+The data set may depend on your goal:
+    * Descriptive - a whole population.
+    * Exploratory - a random sample with many variables measured.
+    * Inferential - the right population, randomly sampled.
+    * Predictive - a training and test set from the sample population.
+    * Causal - data from a randomized study.
+    * Mechanistic - data about all components of the system.
+    
+
+### Example - SPAM detection
+* Start with a general question:
+    * Can I automatically detect e-mails that are SPAM?
+* Make it concrete:
+    * Can I use quantitative characteristics of the e-mails to classify them as SPAM/HAM?
+* Determine what data you can access
+    * Smetimes you can find data free on the web.
+    * Other times you may need to buy the data.
+    * Be sure to respect the terms of use.
+    * If the data don't exist, you may need to generate it yourself.
+* Obtain the data:
+    * Try to obtain the raw data.
+    * Be sure to reference the source.
+    * If you will load the data from an internet source, record the url and time accessed.
+* Our data set:    
+    * <https://search.r-project.org/CRAN/refmans/kernlab/html/spam.html>
+* Clean the data:
+    * Raw data often needs to be processed.
+    * If it is pre-processed, make sure you understand how.
+    * May need reformating, subsampling - record these steps.
+    * **Determine if the date are good enough** - if not, quit or change data.
+
+```{r, echo = TRUE}
+library(kernlab)
+data(spam)
+##dim(spam)
+##names(spam)
+##class(spam)
+str(spam[,1:5])
+head(spam[,1:5])
+```
+
+#### Subsampling the data set
+
+```{r, echo=TRUE}
+## Perform the subsampling
+set.seed(3435)
+trainIndicator <- rbinom(dim(spam)[1], size = 1, prob = 0.5)
+table(trainIndicator)
+
+trainSpam <- spam[trainIndicator == 1, ]
+testSpam <- spam[trainIndicator == 1, ]
+```
+    
+#### Exploratory data analysis
+
+* Look at the data
+* Check for missing data
+* Create exploratory plots
+* Perform exploratory analyses (e.g. clustering)
+
+```{r, echo=TRUE}
+names(trainSpam)
+```
+
+```{r, echo=TRUE}
+head(trainSpam)
+```
+
+```{r, echo=TRUE}
+table(trainSpam$type)
+```
+
+```{r, echo=TRUE}
+plot(trainSpam$capitalAve~trainSpam$type)
+```
